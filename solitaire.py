@@ -1,50 +1,40 @@
 import random
-def step1(deck):
+def (deck):
     if deck.index('a') == len(deck)-1:
         deck.insert(0,deck.pop())
-        #deck = [deck[-1]] +deck[:-1]
         
     elif deck.index('a') == len(deck)-2:
         deck.insert(len(deck)-1,deck.pop(deck.index('a')))
+        
     else:
         deck.insert(deck.index('a')+1,deck.pop(deck.index('a')))
-        #deck[deck.index('a')+1],deck[deck.index('a')] = deck[deck.index('a')],deck[deck.index('a')+1]
-
-
-    #print(deck,"\n\n")
-
-    
+        
     if deck.index('b') == len(deck)-1:
         deck.insert(2,deck.pop())
+        
     elif deck.index('b') == len(deck)-2:
         deck.insert(1,deck.pop(deck.index('b')))
+        
     else:
-
         deck.insert(deck.index('b')+2,deck.pop(deck.index('b')))
-        #deck[deck.index('b')+2],deck[deck.index('b')] = deck[deck.index('b')],deck[deck.index('b')+2]
 
-
-    #print(deck,"\n\n")
-    
     if deck.index('a') < deck.index('b'):
-
         right = deck[deck.index('b')+1:]
         left = deck[:deck.index('a')]
         middle = deck[deck.index('a')+1:deck.index('b')]
         deck = right +["a"]+ middle +["b"]+ left
 
     else:
-
         right = deck[deck.index('a')+1:]
         left = deck[:deck.index('b')]
         middle = deck[deck.index('b')+1:deck.index('a')]
         deck = right +["b"]+ middle +["a"]+ left
 
-
     if deck[-1] in ['a','b']:
         right = deck[53:]
         middle = deck[:53]
         left = deck[53:-1]
+        
     else:
         right = deck[-1:]
         middle = deck[:deck[-1]]
@@ -52,8 +42,6 @@ def step1(deck):
 
     deck = left+middle+right
 
-    #print(deck,"\n\n")
-    
     if deck[0] == 'a' or deck[0] == 'b':
         return [deck,deck[53]]
     else:
