@@ -78,18 +78,19 @@ func (d deck) findValue(value string) int {
 	return -1
 }
 
-func (d deck) moveDown(index int, positions int) {
+func (d deck) moveUp(index int, positions int) {
 	//add check for positions being less than 1 or greater than 53
 	currentIndex := index
 	swapIndex := index + 1
 
 	for i := positions; i > 0; i-- {
-		if swapIndex == len(d) {
+		if currentIndex == len(d)-1 {
 			temp := d[currentIndex]
-			for i := len(d) - 1; i > 0; i-- {
+			for i := len(d) - 1; i > 1; i-- {
 				d[i] = d[i-1]
 			}
-			d[0] = temp
+			d[1] = temp
+			currentIndex = 0
 		} else {
 			d[currentIndex], d[swapIndex] = d[swapIndex], d[currentIndex]
 		}
@@ -124,14 +125,31 @@ func (d deck) tripleCut() deck {
 
 func (d deck) countCut() deck {
 	bottomCard := d[len(d)-1]
-	bottomCut := d[:bottomCard.value]
-	midCut := d[bottomCard.value : len(d)-1]
+	fmt.Println(bottomCard.value != 53)
+	if bottomCard.value != 53 {
+		bottomCut := d[:bottomCard.value]
+		midCut := d[bottomCard.value : len(d)-1]
 
-	var c deck
-	c = append(bottomCut, midCut...)
-	c = append(c, bottomCard)
+		var c deck
+		c = append(midCut, bottomCut...)
+		c = append(c, bottomCard)
 
-	return c
+		return c
+	}
+	return d
+
+}
+
+func (d deck) getOutput() cardInfo {
+	var outputCard cardInfo
+	topCard := d[0]
+	if topCard.value == 53 {
+		outputCard = d[len(d)-1]
+	} else {
+		outputCard = d[topCard.value]
+	}
+
+	return outputCard
 }
 
 // func (d deck) toString() string {

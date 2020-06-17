@@ -1,35 +1,34 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
+
+var alpha string = "abcdefghijklmonpqrstuvwxyz"
 
 func main() {
 	cards := newDeck()
-	//hand, _ := deal(cards, 5)
-	//hand.saveToFile("cards")
-	//hand := deckFromFile("cards")
-
 	//cards.shuffle()
-	fmt.Println(" ")
-	key("Hello", cards)
-
+	fmt.Println(key("Hello", cards))
 }
 
-func key(s string, cards deck) {
-	jokerAPos := cards.findValue("Joker A")
-	cards.moveDown(jokerAPos, 1)
-	jokerBPos := cards.findValue("Joker B")
-	cards.moveDown(jokerBPos, 2)
+func key(s string, cards deck) string {
+	var keystream string
+	for range s {
+		jokerAPos := cards.findValue("Joker A")
+		cards.moveUp(jokerAPos, 1)
+		jokerBPos := cards.findValue("Joker B")
+		cards.moveUp(jokerBPos, 2)
 
-	//cards.print()
-	fmt.Println(" ")
+		cards = cards.tripleCut()
+		cards = cards.countCut()
 
-	c3 := cards.tripleCut()
-	//c3.print()
-
-	cc := c3.countCut()
-	//cc.print()
-
-	outputCard := cc[cc[0].value]
-	fmt.Println(outputCard.value)
-	cards = cc
+		outputCard := cards.getOutput()
+		if outputCard.value == 53 {
+			keystream += key("1", cards)
+		} else {
+			keystream += string(alpha[outputCard.value%26])
+		}
+	}
+	return keystream
 }
