@@ -125,7 +125,6 @@ func (d deck) tripleCut() deck {
 
 func (d deck) countCut() deck {
 	bottomCard := d[len(d)-1]
-	fmt.Println(bottomCard.value != 53)
 	if bottomCard.value != 53 {
 		bottomCut := d[:bottomCard.value]
 		midCut := d[bottomCard.value : len(d)-1]

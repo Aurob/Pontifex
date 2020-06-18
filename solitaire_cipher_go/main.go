@@ -9,10 +9,10 @@ var alpha string = "abcdefghijklmonpqrstuvwxyz"
 func main() {
 	cards := newDeck()
 	//cards.shuffle()
-	fmt.Println(key("Hello", cards))
+	fmt.Println(key("1234567890", cards))
 }
 
-func key(s string, cards deck) string {
+func key(s string, cards deck) (deck, string) {
 	var keystream string
 	for range s {
 		jokerAPos := cards.findValue("Joker A")
@@ -25,10 +25,12 @@ func key(s string, cards deck) string {
 
 		outputCard := cards.getOutput()
 		if outputCard.value == 53 {
-			keystream += key("1", cards)
+			var ks string
+			cards, ks = key("1", cards)
+			keystream += ks
 		} else {
 			keystream += string(alpha[outputCard.value%26])
 		}
 	}
-	return keystream
+	return cards, keystream
 }
