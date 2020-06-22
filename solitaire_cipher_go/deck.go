@@ -33,7 +33,7 @@ func newDeck() deck {
 	return cards
 }
 
-func deal(d deck, handSize int) (deck, deck) {
+func (d deck) deal(handSize int) (deck, deck) {
 	return d[:handSize], d[handSize:]
 }
 
@@ -64,9 +64,27 @@ func (d deck) shuffle() {
 	}
 }
 
-func (d deck) generateKeystream() {
-	//The deck in it's current order is considered the "key" here
+func (d *deck) generateKeystream(c int) string {
+	var keystream string
+	for i := 0; i < c; i++ {
+		jokerAPos := (*d).findValue("Joker A")
+		(*d).moveUp(jokerAPos, 1)
+		jokerBPos := (*d).findValue("Joker B")
+		(*d).moveUp(jokerBPos, 2)
 
+		(*d).tripleCut()
+		(*d).countCut()
+
+		outputCard := (*d).getOutputCard()
+		if outputCard.value == 53 {
+			var ks string
+			ks = (*d).generateKeystream(1)
+			keystream += ks
+		} else {
+			keystream += string(alpha[outputCard.value%26])
+		}
+	}
+	return keystream
 }
 
 func (d deck) findValue(value string) int {
@@ -101,51 +119,47 @@ func (d deck) moveUp(index int, positions int) {
 		swapIndex = currentIndex + 1
 	}
 }
-func (d deck) tripleCut() deck {
+func (d *deck) tripleCut() {
 	jokerA := d.findValue("Joker A")
 	jokerB := d.findValue("Joker B")
 
-	var cut1 deck
-	var cut2 deck
-	var cut3 deck
+	var temp deck
+	var firstJoker, secondJoker int
 	if jokerA < jokerB {
-		cut1 = d[:jokerA]
-		cut2 = d[jokerA : jokerB+1]
-		cut3 = d[jokerB+1:]
+		firstJoker = jokerA
+		secondJoker = jokerB
 	} else {
-		cut1 = d[:jokerB]
-		cut2 = d[jokerB : jokerA+1]
-		cut3 = d[jokerA+1:]
+		firstJoker = jokerB
+		secondJoker = jokerA
 	}
-	var c deck
-	c = append(cut3, cut2...)
-	c = append(c, cut1...)
-	return c
+	temp = append(temp, (*d)[secondJoker+1:]...)
+	temp = append(temp, (*d)[firstJoker:secondJoker+1]...)
+	temp = append(temp, (*d)[:firstJoker]...)
+	(*d) = temp
+
 }
 
-func (d deck) countCut() deck {
-	bottomCard := d[len(d)-1]
+func (d *deck) countCut() {
+	bottomCard := (*d)[len((*d))-1]
 	if bottomCard.value != 53 {
-		bottomCut := d[:bottomCard.value]
-		midCut := d[bottomCard.value : len(d)-1]
+		bottomCut := (*d)[:bottomCard.value]
+		midCut := (*d)[bottomCard.value : len((*d))-1]
 
-		var c deck
-		c = append(midCut, bottomCut...)
-		c = append(c, bottomCard)
+		var temp deck
+		temp = append(midCut, bottomCut...)
+		temp = append(temp, bottomCard)
 
-		return c
+		(*d) = temp
 	}
-	return d
-
 }
 
-func (d deck) getOutput() cardInfo {
+func (d *deck) getOutputCard() cardInfo {
 	var outputCard cardInfo
-	topCard := d[0]
+	topCard := (*d)[0]
 	if topCard.value == 53 {
-		outputCard = d[len(d)-1]
+		outputCard = (*d)[len((*d))-1]
 	} else {
-		outputCard = d[topCard.value]
+		outputCard = (*d)[topCard.value]
 	}
 
 	return outputCard
